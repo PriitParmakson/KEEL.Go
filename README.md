@@ -1,2 +1,3 @@
-# KEEL.Go
 Keeletöötlusprogrammid Go keeles
+
+[Töödeldud keeleandmed](https://github.com/PriitParmakson/KEEL.Go)
