@@ -14,34 +14,6 @@ func check(e error) {
     }
 }
 
-func palindroomiTest(sona []byte) {
-	var pd bool
-	var p int
-	p = len(sona)
-	// fmt.Println(string(sona), " ", p)
-	pd = true
-	for i := 0; i < p/2; i++ {
-		// fmt.Println(sona[i], " ... ", sona[p - i - 1])
-		if sona[i] != sona[p - i - 1] {
-			pd = false
-			break
-		} 
-	}
-	if pd == true {
-		fmt.Println("Palindroomsõna: ", string(sona))
-	}	
-}
-
-// Tagastab pööratud sõna, iseseisva viiluna
-func pooraSona(sona []byte) []byte {
-	p := len(sona)
-	pSona := make([]byte, p)
- 	for i := 0; i < p; i = i + 1 {
-        pSona[i] = sona[p - i - 1]
-    }
-    return pSona
-}
-
 // Reverse returns its argument string reversed rune-wise left to right.
 // http://stackoverflow.com/questions/1752414/how-to-reverse-a-string-in-go
 func Reverse(s string) string {
@@ -52,40 +24,41 @@ func Reverse(s string) string {
     return string(r)
 }
 
-// Selgitab välja, kas sõna on samasõna (tyyp 1), lõugsõna (tyyp 2)
-// või tavasõna (tyyp 0)
-func selgitaSonaTyyp(algSona string, pSona string, sonad []string) int {
-	tyyp := 0 // eeldame tavasõna
-	for _, sona := range sonad {
-	 	if strings.Compare(pSona, sona) == 0 {
-	 		if strings.Compare(algSona, pSona) == 0 {
-	 			// samasõna
-	 			tyyp = 1
-				// fmt.Println(algSona)
-				break		 			
-	 		} else {
-	 			// lõugsõnad
-	 			tyyp = 2
-				// fmt.Println(algSona, " -- ", pSona)
-				break		 			
-	 		}
-		}
-	}
-	return tyyp
-}
-
-func poordsonatest(sonad []string) []string {
+// Sisendiks sõnade viil (sõnad esitatud stringidena)
+// Tagastab tulemiridade viilu
+func selgitaSonadeTyybid(sonad []string) []string {
 	var tulem []string
-	for _, sona := range sonad {
-  		pSona := Reverse(sona)
- 		tyyp := selgitaSonaTyyp(sona, pSona, sonad)
- 		switch {
- 		case tyyp == 0:
- 		case tyyp == 1:
- 			tulem = append(tulem, sona)
- 		case tyyp == 2:
- 			tulem = append(tulem, sona + "  " + pSona)	
- 		}
+	for i, sona1 := range sonad {
+  		pSona := Reverse(sona1)
+
+  		if i == 30000 {
+  			break
+  		}
+
+		for j, sona2 := range sonad {
+
+			if j == 30000 {
+				break
+			}
+
+			if strings.Contains(sona2, pSona) {
+			 	if strings.Compare(pSona, sona2) == 0 {
+			 		if strings.Compare(sona1, pSona) == 0 {
+			 			// samasõna
+			 			tulem = append(tulem, sona1)
+			 		} else {
+			 			// lõugsõnad
+			 			tulem = append(tulem, sona1 + " <-> " + pSona)
+			 		}
+				} else { // osaline sisalduvus
+					// registreeri ainult vähemalt 4-tähelised sisalduvused
+					if len(sona1) > 3 {
+						tulem = append(tulem, sona1 + " -> " + sona2)
+					}
+				}
+			}
+		}
+
  	}
  	return tulem
 }
@@ -107,7 +80,7 @@ func main() {
 
     defer f.Close()
 
-  	tulem := poordsonatest(sonad)
+  	tulem := selgitaSonadeTyybid(sonad)
 
   	// Tulemi kirjutamine faili
   	for _, tulemiRida := range tulem {
